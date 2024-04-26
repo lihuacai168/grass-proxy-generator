@@ -1,14 +1,15 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <HelloWorld v-if="false" msg="Welcome to Your Vue.js App"/>
+  <GrassProxy/>
 </template>
 
 <script>
 import HelloWorld from './components/HelloWorld.vue'
-
+import GrassProxy from "@/components/GrassProxy.vue";
 export default {
   name: 'App',
   components: {
+    GrassProxy,
     HelloWorld
   }
 }
