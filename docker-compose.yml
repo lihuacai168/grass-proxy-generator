@@ -1,0 +1,6 @@
+version: '3'
+services:
+  grass:
+    image: rikasai/grass-proxy-generator  # 指定远程镜像的名称
+    ports:
+      - "12380:8080"
