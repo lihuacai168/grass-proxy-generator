@@ -44,7 +44,7 @@
 
     <div class="buttons">
       <button @click="preview">预览</button>
-      <button @click="handleDownloadAllFilesAsZip">下载CSV文件</button>
+      <button @click="handleDownloadAllFilesAsZip">下载完整操作文档</button>
     </div>
 
     <div v-if="previewContent" class="preview-section">
