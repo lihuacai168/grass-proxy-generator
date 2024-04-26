@@ -21,8 +21,19 @@
     </div>
 
     <div class="input-group">
-      <label for="proxyApiToken">Proxy seller的API token:</label>
-      <input type="text" id="proxyApiToken" v-model="proxyApiToken" placeholder="请输入Proxy seller的API token"/>
+      <label for="proxyApiToken">获取代理秘钥(token):</label>
+      <input type="text" id="proxyApiToken" v-model="proxyApiToken" placeholder="请输入的秘钥(token)"/>
+    </div>
+    <div>
+      <!-- Other content -->
+      <button @click="showModal = true">查看获取秘钥(token)和加入白名单操作</button>
+      <!-- Image Modal component -->
+      <ImageModal
+          :imageUrl="imageSrc"
+          :altText="imageAltText"
+          :show="showModal"
+          @update:show="showModal = $event"
+      />
     </div>
 
     <div class="input-group">
@@ -51,6 +62,7 @@
       <p>用户信息预览:</p>
       <textarea :value="previewContent" readonly></textarea>
     </div>
+
   </div>
 </template>
 <style>
@@ -72,8 +84,12 @@
 
 <script>
 import {ref} from 'vue';
+import ImageModal from "@/components/ImageModal.vue";
+import {ElMessage} from 'element-plus'
+
 
 export default {
+  components: {ImageModal},
   setup() {
     const grassAccount = ref('');
     const grassPassword = ref('');
@@ -83,6 +99,9 @@ export default {
     const proxyPort = ref('50101');
     const previewContent = ref('grassAccount,grassPassword,proxyInfo');
 
+    const showModal = ref(false);
+    const imageSrc = ref('https://img.huacai.one/huacai-blog/2024/04/27/202404270046147.webp');
+    const imageAltText = ref('Description of the image');
 
     const getIps = async (token) => {
       console.log(token);
@@ -106,6 +125,10 @@ export default {
         return ips; // 返回IP地址列表
       } catch (error) {
         console.error("Error fetching IP addresses:", error);
+        showModal.value = true;
+
+        ElMessage.error('访问api失败，请检查token，并且把本站的ip, 149.104.26.224加入到proxy-seller的白名单')
+
         // 错误处理: 根据实际需求，这里可以返回空数组或其他指示错误的响应
         return [];
       }
@@ -114,9 +137,14 @@ export default {
       // 检查每个输入项是否为空
       if (!grassAccount.value || !grassPassword.value || !proxyApiToken.value || !proxyUsername.value || !proxyPassword.value) {
         // 如果有任何一个输入项为空，显示提示信息并退出函数，不执行后面的预览逻辑
-        alert('所有字段都是必填项，请确保填写完整。');
+        ElMessage.error('所有字段都是必填项，请确保填写完整。')
+
         return; // 中止函数执行
       }
+      ElMessage({
+        message: '正在获取数据，请稍等...',
+        type: 'success',
+      })
       const ips = await getIps(proxyApiToken.value);
       previewContent.value = `grassAccount,grassPassword,proxyInfo\n` + ips.map(ip => `${grassAccount.value},${grassPassword.value},${proxyUsername.value}:${proxyPassword.value}:${ip}:${proxyPort.value}`).join('\n');
     };
@@ -203,7 +231,10 @@ docker-compose logs --tail 200
       previewContent,
       preview,
       downloadCSV,
-      handleDownloadAllFilesAsZip
+      handleDownloadAllFilesAsZip,
+      showModal,
+      imageSrc,
+      imageAltText
     };
   }
 };
