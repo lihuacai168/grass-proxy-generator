@@ -15,6 +15,7 @@ jobs:
     env:
       DOCKERHUB_USERNAME: rikasai
       DOCKER_REPOSITORY_NAME: grass-proxy-generator
+      DOCKER_REPOSITORY_NAME_NGINX: grass-proxy-generator-nginx
 
     steps:
     - name: Check out the repository
@@ -44,4 +45,15 @@ jobs:
         push: true
         tags: |
           ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:latest
+          ${{ env.GIT_TAG != '' && format('{0}/{1}:{2}', env.DOCKERHUB_USERNAME, env.DOCKER_REPOSITORY_NAME, env.GIT_TAG) || '' }}
+
+    - name: Build APP Image
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        file: ./Dockerfile-build
+        platforms: linux/amd64
+        push: true
+        tags: |
+          ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME_NGINX }}:latest
           ${{ env.GIT_TAG != '' && format('{0}/{1}:{2}', env.DOCKERHUB_USERNAME, env.DOCKER_REPOSITORY_NAME, env.GIT_TAG) || '' }}
